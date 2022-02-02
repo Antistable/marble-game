@@ -17,7 +17,7 @@ export default class Stick extends cc.Component {
     }
 
     ifClick(event: cc.Touch): void {
-        if (Game.State == Game.FinishDraggingMarble) {
+        if (Game.State === Game.FinishDraggingMarble) {
             this.originalNodeY = this.node.y;
             this.originalMouseY = event.getLocation().y;
             const distance: number = event.getLocation().sub(v2(this.node.x - 2, this.node.y - 75)).mag();
@@ -28,7 +28,7 @@ export default class Stick extends cc.Component {
     }
 
     move(event: cc.Touch): void {
-        const isOn: boolean = Game.State == Game.MovingStick;
+        const isOn: boolean = Game.State === Game.MovingStick;
         if (isOn) {
             const dy: number = this.originalMouseY - event.getLocation().y;
             this.node.y = this.originalNodeY - (dy > 100 ? 100 : (dy < 0 ? 0 : dy)); 
@@ -37,7 +37,7 @@ export default class Stick extends cc.Component {
     }
 
     launch(event: cc.Touch): void {
-        const isOn: boolean = Game.State == Game.MovingStick;
+        const isOn: boolean = Game.State === Game.MovingStick;
         if (isOn) {
             const dy: number = this.originalMouseY - event.getLocation().y;
             if (dy <= 0) {
@@ -45,7 +45,7 @@ export default class Stick extends cc.Component {
                 Game.State = Game.MovingStick;
             }
             else {
-                Game.currentMarble.getComponent(RigidBody).applyLinearImpulse(v2(0, (dy > 100 ? 100 : dy) * 8 + 488), v2(this.node.position.x, this.node.position.y), true);
+                Game.currentMarble.getComponent(RigidBody).applyLinearImpulse(v2(0, (dy > 100 ? 100 : dy) * 5 + 600), v2(this.node.position.x, this.node.position.y), true);
                 this.node.y = this.originalNodeY;
                 Game.State = Game.LaunchingMarble;
             }
