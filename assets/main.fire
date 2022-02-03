@@ -234,7 +234,7 @@
       "array": [
         0,
         0,
-        223.47514911718758,
+        229.4900791523428,
         0,
         0,
         0,
@@ -409,6 +409,15 @@
     "_enabled": true,
     "obstacle3Prefab": {
       "__uuid__": "37b90dc1-f946-4902-a19c-1b8d2d76126c"
+    },
+    "linePrefab": {
+      "__uuid__": "9de46045-c2bf-4502-a0b3-45a04ab80335"
+    },
+    "greenLineSprite": {
+      "__uuid__": "d8756b8d-a3f8-4637-9384-7af8fda88009"
+    },
+    "redLineSprite": {
+      "__uuid__": "c57f4c4c-91bd-4beb-bbef-d30909d2c29f"
     },
     "_id": "311wsPZyZP07lbjPmwKEry"
   },
@@ -1285,6 +1294,9 @@
       "__id__": 25
     },
     "_enabled": true,
+    "GameNode": {
+      "__id__": 7
+    },
     "_id": "a04UzWWoxKFZ50iFkMQP4i"
   },
   {
@@ -2735,7 +2747,7 @@
     },
     "_angularVelocity": 0,
     "_fixedRotation": false,
-    "enabledContactListener": false,
+    "enabledContactListener": true,
     "bullet": false,
     "awakeOnLoad": true,
     "_id": "4ciblFdYRHL4WnDiTtXhpW"
@@ -3644,8 +3656,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 128,
-      "height": 128
+      "width": 130,
+      "height": 131
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -3697,7 +3709,7 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "1ff79a38-db59-440f-900d-d01809c189d5"
+      "__uuid__": "852c93a4-72b4-4223-bc44-c8cb63d1b2ef"
     },
     "_type": 0,
     "_sizeMode": 1,
@@ -3768,6 +3780,9 @@
       "__id__": 71
     },
     "_enabled": true,
+    "GameNode": {
+      "__id__": 7
+    },
     "_id": "81jEyUZ7dDWJBhsy6tBgud"
   },
   {

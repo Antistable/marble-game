@@ -1,9 +1,14 @@
 import { initializeApp } from "firebase/app"
 import Game from "./Game";
-const { ccclass } = cc._decorator;
+const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class Marble extends cc.Component {
+
+    @property(cc.Node)
+    GameNode: cc.Node = null;
+
+    Game: Game = null;
 
     onLoad(): void {
         const firebaseConfig = {
@@ -21,9 +26,13 @@ export default class Marble extends cc.Component {
     }
 
     start(): void {
-        Game.currentMarble = this.node;
+        this.Game = this.GameNode.getComponent(Game);
+        this.Game.currentMarble = this.node;
     }
 
-    update(): void {
+    onBeginContact(contact: cc.PhysicsContact, selfCollider: cc.PhysicsCollider, otherCollider: cc.PhysicsCollider): void {
+        if (otherCollider.node.name === "scene2" && this.Game.State === this.Game.Launch) {
+            this.Game.settle(this.node.position.x);
+        }
     }
 }
