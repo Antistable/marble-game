@@ -6,9 +6,6 @@ const { TOUCH_START, TOUCH_MOVE, TOUCH_END, TOUCH_CANCEL } = cc.Node.EventType;
 @ccclass
 export default class Stick extends cc.Component {
 
-    @property(cc.Node)
-    GameNode: cc.Node = null;
-
     Game: Game = null;
 
     originalMouseY: number = 0;
@@ -22,7 +19,7 @@ export default class Stick extends cc.Component {
     }
 
     start(): void {
-        this.Game = this.GameNode.getComponent(Game);
+        this.Game = cc.find("Game").getComponent(Game);
     }
 
     ifClick(event: cc.Touch): void {
