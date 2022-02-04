@@ -1,16 +1,21 @@
 const { ccclass, property } = cc._decorator;
+const { v2 } = cc;
 
 @ccclass
 export default class Game extends cc.Component {
 
     //States
+    readonly Drag: number = 1;
+
     readonly DragOver: number = 2;
 
     readonly MoveStick: number = 3;
 
     readonly Launch: number = 4;
 
-    State: number = this.DragOver;
+    readonly Settle: number = 5;
+
+    State: number = this.Settle;
 
 
     @property(cc.Prefab)
@@ -49,7 +54,7 @@ export default class Game extends cc.Component {
         cc.find("scene1").zIndex = 5;
         cc.find("scene2").zIndex = 5;
         cc.find("obstacle1").zIndex = 6;;
-        cc.find("glass1").zIndex = 99;
+        cc.find("glass1").zIndex = 98;
         for (let index = 0; index < 7; index++) {
             this.initObstacle(448 - index * 50, 510);
         }
@@ -70,25 +75,29 @@ export default class Game extends cc.Component {
 
     initObstacle(x: number, y: number): void {
         const obstacle3: cc.Node = cc.instantiate(this.obstacle3Prefab);
-        obstacle3.setPosition(cc.v2(x, y));
+        obstacle3.setPosition(v2(x, y));
         obstacle3.zIndex = 6;
         obstacle3.parent = cc.director.getScene();
     }
 
     initLine(x: number): cc.Node {
         const line: cc.Node = cc.instantiate(this.linePrefab);
-        line.setPosition(cc.v2(x, 467));
+        line.setPosition(v2(x, 467));
         line.zIndex = 6;
         line.parent = cc.director.getScene();
         return line;
     }
 
     randomLines(): void {
+        this.greenLinesNum = 0;
         for (let index = 0; index < 8; index++) {
             const isGreen: boolean = Boolean(Math.floor(Math.random() * 1.7));
             if (isGreen === true) {
                 this.lines[index].getComponent(cc.Sprite).spriteFrame = this.greenLineSprite;
                 this.greenLinesNum += 1;
+            }
+            else{
+                this.lines[index].getComponent(cc.Sprite).spriteFrame = this.redLineSprite;
             }
         }
         if (this.greenLinesNum === 0 || this.greenLinesNum === 8) {
@@ -98,17 +107,29 @@ export default class Game extends cc.Component {
 
     settle(marbleX: number): void {
         const marbleLineIndex: number = Math.floor((473 - marbleX) / 50);
-        if (this.lines[marbleLineIndex].getComponent(cc.Sprite).spriteFrame.name === this.greenLineSprite.name) {
+        if (this.lines[marbleLineIndex]?.getComponent(cc.Sprite)?.spriteFrame?.name === this.greenLineSprite.name) {
             for (let index = 0; index < 8 - this.greenLinesNum; index++) {
                 this.initMarble(Math.floor(Math.random() * 8), 307, 386);
             }
         } //Win
+        this.randomLines();
     }
 
     initMarble(marbleSpriteIndex: number, x: number, y: number): void {
         const marble: cc.Node = cc.instantiate(this.marblePrefab);
-        marble.setPosition(cc.v2(x, y));
+        marble.setPosition(v2(x, y));
         marble.getComponent(cc.Sprite).spriteFrame = this.marbleSprites[marbleSpriteIndex];
         marble.parent = cc.director.getScene();
+    }
+
+    update(dt: number): void {
+        if (this.currentMarble !== null) {
+            if (this.State === this.Settle && this.currentMarble.isValid) {
+                this.currentMarble.opacity -= dt * 255;
+                if (this.currentMarble.opacity <= 0) {
+                    this.currentMarble.destroy();
+                }
+            }
+        }
     }
 }
