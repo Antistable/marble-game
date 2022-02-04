@@ -42,18 +42,20 @@ export default class Marble extends cc.Component {
     }
 
     dragOver(event: cc.Touch) {
-        if (event.getLocation().sub(v2(500, 600)).mag() < 15) {
-            this.node.zIndex = 6;
-            this.Game.State = this.Game.DragOver;
-            this.getComponent(RigidBody).active = true;
-        }
-        else {
-            this.node.position = this.positionBeforeDrag;
-            this.Game.State = this.Game.Settle;
-            this.node.zIndex = 0;
-            this.getComponent(RigidBody).active = true;
-            this.Game.currentMarble = null;
-            this.Game.State = this.Game.Settle;
+        if (this.Game.State === this.Game.Drag) {
+            if (event.getLocation().sub(v2(500, 600)).mag() < 15) {
+                this.node.zIndex = 6;
+                this.Game.State = this.Game.DragOver;
+                this.getComponent(RigidBody).active = true;
+            }
+            else {
+                this.node.position = this.positionBeforeDrag;
+                this.Game.State = this.Game.Settle;
+                this.node.zIndex = 0;
+                this.getComponent(RigidBody).active = true;
+                this.Game.currentMarble = null;
+                this.Game.State = this.Game.Settle;
+            }
         }
     }
 
