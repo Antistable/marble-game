@@ -35,7 +35,7 @@ export default class Game extends cc.Component {
 
     currentMarble: cc.Node = null;
 
-    marbleList: Marble[] = [{ x: 259, y: 225, sprite: 1 }];
+    marbleList: Marble[] = [{ x: 307, y: 386, sprite: 0 }, { x: 307, y: 386, sprite: 1 }, { x: 307, y: 386, sprite: 2 }, { x: 307, y: 386, sprite: 3 }, { x: 307, y: 386, sprite: 4 }, { x: 307, y: 386, sprite: 5 }, { x: 307, y: 386, sprite: 6 }, { x: 307, y: 386, sprite: 7 }, { x: 307, y: 386, sprite: 8 }];
 
 
     @property(cc.Prefab)
@@ -58,11 +58,11 @@ export default class Game extends cc.Component {
 
     app: firebase.app.App;
 
+    doc: firebase.firestore.DocumentReference;
+
     onLoad(): void {
         cc.director.getPhysicsManager().enabled = true;
-    }
 
-    start(): void {
         const firebaseConfig = {
             apiKey: "AIzaSyBP0Z9U6NtSzV_ew6aHGgeu0pOIfqiOJik",
             authDomain: "googlify-dev.firebaseapp.com",
@@ -72,6 +72,10 @@ export default class Game extends cc.Component {
             appId: "1:579802640871:web:6919d595e6f5bcd2d44d42"
         };
         this.app = firebase.initializeApp(firebaseConfig);
+        this.doc = firebase.firestore().collection("marble").doc("test");
+    }
+
+    start(): void {
         cc.find("body1").zIndex = 1;
         cc.find("glass2").zIndex = 1;
         cc.find("rainbow").zIndex = 2;
@@ -99,9 +103,33 @@ export default class Game extends cc.Component {
         }
         this.randomLines();
 
-        this.marbleList.forEach((marble: Marble, index: number) => {
-            (this.initMarble(marble) as any).index = index;
-        })
+        this.doc.get().then((doc: firebase.firestore.DocumentData) => {
+            if (doc.exists) {
+                this.marbleList = doc.data().data;
+                this.marbleList.forEach((marble: Marble, index: number) => {
+                    (this.initMarble(marble) as any).index = index;
+                })
+            }
+            else {
+                let createdMarbles: cc.Node[] = [];
+                this.marbleList.forEach((marble: Marble) => {
+                    createdMarbles.push(this.initMarble(marble));
+                })
+                this.scheduleOnce((): void => {
+                    this.marbleList = [];
+                    createdMarbles.forEach((marble: cc.Node, index: number) => {
+                        const name = marble.getComponent(cc.Sprite).spriteFrame?.name;
+                        this.marbleList.push({
+                            x: marble.x,
+                            y: marble.y,
+                            sprite: this.marbleSprites.map((sprite: cc.SpriteFrame) => { return sprite.name }).indexOf(name)
+                        });
+                        (createdMarbles[index] as any).index = this.marbleList.length - 1;
+                    });
+                    this.updateMarbleList();
+                }, 2);
+            }
+        });
     }
 
     initObstacle(x: number, y: number): void {
@@ -153,7 +181,7 @@ export default class Game extends cc.Component {
                     (createdMarbles[index] as any).index = this.marbleList.length - 1;
                 });
                 this.updateMarbleList();
-            }, 1);
+            }, 2);
         }
         this.scheduleOnce(this.randomLines, 2);
     }
@@ -166,9 +194,8 @@ export default class Game extends cc.Component {
         return marble;
     }
 
-    updateMarbleList():void{
-        const data: firebase.firestore.Firestore = firebase.firestore(this.app);
-        data.collection("marble").doc("test").set({
+    updateMarbleList(): void {
+        this.doc.set({
             data: this.marbleList
         });
     }
