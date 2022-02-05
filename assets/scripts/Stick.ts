@@ -53,6 +53,7 @@ export default class Stick extends cc.Component {
             else {
                 this.Game.currentMarble.getComponent(RigidBody).applyLinearImpulse(v2(0, (dy > 100 ? 100 : dy) * 5 + 600), v2(this.node.position.x, this.node.position.y), true);
                 this.node.y = this.originalNodeY;
+                this.Game.marbleList.splice((this.Game.currentMarble as any).index, 1);
                 this.Game.State = this.Game.Launch;
             }
         }

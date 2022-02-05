@@ -12,9 +12,7 @@ export default class Marble extends cc.Component {
 
     positionBeforeDrag: cc.Vec3 = null;
 
-    onLoad(): void {
-        cc.director.getPhysicsManager().enabled = true;
-    }
+    id: number = -1;
 
     start(): void {
         this.Game = cc.find("Game").getComponent(Game);
@@ -63,10 +61,8 @@ export default class Marble extends cc.Component {
         if (otherCollider.node.name === "scene2" && this.Game.State === this.Game.Launch) {
             this.scheduleOnce(() => {
                 this.Game.State = this.Game.Settle;
-                this.Game.scheduleOnce(() => {
-                    this.Game.settle(this.node.position.x);
-                }, 1);
-            }, 1);
+                this.Game.settle(this.node.position.x);
+            });
         }
     }
 }

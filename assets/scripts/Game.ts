@@ -1,5 +1,13 @@
 const { ccclass, property } = cc._decorator;
 const { v2 } = cc;
+import { initializeApp } from "firebase/app";
+import { firestore } from "firebase/firestore"
+
+interface Marble {
+    x: number;
+    y: number;
+    sprite: number;
+}
 
 @ccclass
 export default class Game extends cc.Component {
@@ -26,6 +34,8 @@ export default class Game extends cc.Component {
 
     currentMarble: cc.Node = null;
 
+    marbleList: Marble[] = [{ x: 259, y: 225, sprite: 1 }];
+
 
     @property(cc.Prefab)
     obstacle3Prefab: cc.Prefab = null;
@@ -42,7 +52,20 @@ export default class Game extends cc.Component {
 
     lines: cc.Node[] = [];
 
-    greenLinesNum: number = 0;
+    greenLineNum: number = 0;
+
+    onLoad(): void {
+        const firebaseConfig = {
+            apiKey: "AIzaSyBP0Z9U6NtSzV_ew6aHGgeu0pOIfqiOJik",
+            authDomain: "googlify-dev.firebaseapp.com",
+            projectId: "googlify-dev",
+            storageBucket: "googlify-dev.appspot.com",
+            messagingSenderId: "579802640871",
+            appId: "1:579802640871:web:6919d595e6f5bcd2d44d42"
+        };
+        initializeApp(firebaseConfig);
+        cc.director.getPhysicsManager().enabled = true;
+    }
 
     start(): void {
         cc.find("body1").zIndex = 1;
@@ -71,6 +94,10 @@ export default class Game extends cc.Component {
             this.lines[index] = this.initLine(448 - index * 50);
         }
         this.randomLines();
+
+        this.marbleList.forEach((marble: Marble, index: number) => {
+            (this.initMarble(marble) as any).index = index;
+        })
     }
 
     initObstacle(x: number, y: number): void {
@@ -89,43 +116,57 @@ export default class Game extends cc.Component {
     }
 
     randomLines(): void {
-        this.greenLinesNum = 0;
+        this.greenLineNum = 0;
         for (let index = 0; index < 8; index++) {
             const isGreen: boolean = Boolean(Math.floor(Math.random() * 1.7));
             if (isGreen === true) {
                 this.lines[index].getComponent(cc.Sprite).spriteFrame = this.greenLineSprite;
-                this.greenLinesNum += 1;
+                this.greenLineNum += 1;
             }
-            else{
+            else {
                 this.lines[index].getComponent(cc.Sprite).spriteFrame = this.redLineSprite;
             }
         }
-        if (this.greenLinesNum === 0 || this.greenLinesNum === 8) {
+        if (this.greenLineNum === 0 || this.greenLineNum === 8) {
             this.randomLines();
         }
     }
 
     settle(marbleX: number): void {
+        let createdMarbles: cc.Node[] = [];
         const marbleLineIndex: number = Math.floor((473 - marbleX) / 50);
         if (this.lines[marbleLineIndex]?.getComponent(cc.Sprite)?.spriteFrame?.name === this.greenLineSprite.name) {
-            for (let index = 0; index < 8 - this.greenLinesNum; index++) {
-                this.initMarble(Math.floor(Math.random() * 8), 307, 386);
+            for (let index = 0; index < 8 - this.greenLineNum; index++) {
+                createdMarbles.push(this.initMarble({ sprite: Math.floor(Math.random() * 8), x: 307, y: 386 }));
             }
-        } //Win
-        this.randomLines();
+            this.scheduleOnce((): void => {
+                createdMarbles.forEach((marble: cc.Node, index: number) => {
+                    this.marbleList.push({
+                        x: marble.x,
+                        y: marble.y,
+                        sprite: this.marbleSprites.map((sprite: cc.SpriteFrame) => { return sprite.name }).indexOf(marble.getComponent(cc.Sprite).spriteFrame.name)
+                    });
+                    (createdMarbles[index] as any).index = this.marbleList.length - 1;
+                });
+                const data = firestore().collection("marble").doc("test");
+                data.set({ data: this.marbleList });
+            }, 1);
+        }
+        this.scheduleOnce(this.randomLines, 2);
     }
 
-    initMarble(marbleSpriteIndex: number, x: number, y: number): void {
+    initMarble(config: Marble): cc.Node {
         const marble: cc.Node = cc.instantiate(this.marblePrefab);
-        marble.setPosition(v2(x, y));
-        marble.getComponent(cc.Sprite).spriteFrame = this.marbleSprites[marbleSpriteIndex];
+        marble.setPosition(v2(config.x, config.y));
+        marble.getComponent(cc.Sprite).spriteFrame = this.marbleSprites[config.sprite];
         marble.parent = cc.director.getScene();
+        return marble;
     }
 
     update(dt: number): void {
         if (this.currentMarble !== null) {
             if (this.State === this.Settle && this.currentMarble.isValid) {
-                this.currentMarble.opacity -= dt * 255;
+                this.currentMarble.opacity -= dt * 100;
                 if (this.currentMarble.opacity <= 0) {
                     this.currentMarble.destroy();
                 }
