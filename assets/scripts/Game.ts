@@ -81,7 +81,7 @@ export default class Game extends cc.Component {
             appId: "1:579802640871:web:6919d595e6f5bcd2d44d42"
         };
         this.app = firebase.initializeApp(firebaseConfig);
-        this.doc = firebase.firestore().collection("marble").doc("test2");
+        this.doc = firebase.firestore().collection("marble").doc("test");
     }
 
     start(): void {
