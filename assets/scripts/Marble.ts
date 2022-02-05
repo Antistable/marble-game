@@ -59,10 +59,8 @@ export default class Marble extends cc.Component {
 
     onBeginContact(contact: cc.PhysicsContact, selfCollider: cc.PhysicsCollider, otherCollider: cc.PhysicsCollider): void {
         if (otherCollider.node.name === "scene2" && this.Game.State === this.Game.Launch) {
-            this.scheduleOnce(() => {
-                this.Game.State = this.Game.Settle;
-                this.Game.settle(this.node.position.x);
-            });
+            this.Game.State = this.Game.Settle;
+            this.Game.settle(this.node.position.x);
         }
     }
 }

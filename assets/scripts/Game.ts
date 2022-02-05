@@ -1,7 +1,8 @@
 const { ccclass, property } = cc._decorator;
 const { v2 } = cc;
-import { initializeApp } from "firebase/app";
-import { firestore } from "firebase/firestore"
+
+import * as firebase from 'firebase/app';
+import 'firebase/firestore';
 
 interface Marble {
     x: number;
@@ -54,7 +55,14 @@ export default class Game extends cc.Component {
 
     greenLineNum: number = 0;
 
+
+    app: firebase.app.App;
+
     onLoad(): void {
+        cc.director.getPhysicsManager().enabled = true;
+    }
+
+    start(): void {
         const firebaseConfig = {
             apiKey: "AIzaSyBP0Z9U6NtSzV_ew6aHGgeu0pOIfqiOJik",
             authDomain: "googlify-dev.firebaseapp.com",
@@ -63,11 +71,7 @@ export default class Game extends cc.Component {
             messagingSenderId: "579802640871",
             appId: "1:579802640871:web:6919d595e6f5bcd2d44d42"
         };
-        initializeApp(firebaseConfig);
-        cc.director.getPhysicsManager().enabled = true;
-    }
-
-    start(): void {
+        this.app = firebase.initializeApp(firebaseConfig);
         cc.find("body1").zIndex = 1;
         cc.find("glass2").zIndex = 1;
         cc.find("rainbow").zIndex = 2;
@@ -118,7 +122,7 @@ export default class Game extends cc.Component {
     randomLines(): void {
         this.greenLineNum = 0;
         for (let index = 0; index < 8; index++) {
-            const isGreen: boolean = Boolean(Math.floor(Math.random() * 1.7));
+            const isGreen: boolean = Boolean(Math.floor(Math.random() * 1.9));
             if (isGreen === true) {
                 this.lines[index].getComponent(cc.Sprite).spriteFrame = this.greenLineSprite;
                 this.greenLineNum += 1;
@@ -148,8 +152,7 @@ export default class Game extends cc.Component {
                     });
                     (createdMarbles[index] as any).index = this.marbleList.length - 1;
                 });
-                const data = firestore().collection("marble").doc("test");
-                data.set({ data: this.marbleList });
+                this.updateMarbleList();
             }, 1);
         }
         this.scheduleOnce(this.randomLines, 2);
@@ -161,6 +164,13 @@ export default class Game extends cc.Component {
         marble.getComponent(cc.Sprite).spriteFrame = this.marbleSprites[config.sprite];
         marble.parent = cc.director.getScene();
         return marble;
+    }
+
+    updateMarbleList():void{
+        const data: firebase.firestore.Firestore = firebase.firestore(this.app);
+        data.collection("marble").doc("test").set({
+            data: this.marbleList
+        });
     }
 
     update(dt: number): void {
