@@ -1,5 +1,6 @@
 const { ccclass, property } = cc._decorator;
 const { v2 } = cc;
+const { TOUCH_END } = cc.Node.EventType;
 
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -63,6 +64,14 @@ export default class Game extends cc.Component {
     onLoad(): void {
         cc.director.getPhysicsManager().enabled = true;
 
+        cc.find("abort").on(TOUCH_END, (): void => {
+            if (this.State === this.Launch) {
+                this.currentMarble.destroy();
+                this.State = this.Settle;
+                this.randomLines();
+            }
+        })
+
         const firebaseConfig = {
             apiKey: "AIzaSyBP0Z9U6NtSzV_ew6aHGgeu0pOIfqiOJik",
             authDomain: "googlify-dev.firebaseapp.com",
@@ -72,7 +81,7 @@ export default class Game extends cc.Component {
             appId: "1:579802640871:web:6919d595e6f5bcd2d44d42"
         };
         this.app = firebase.initializeApp(firebaseConfig);
-        this.doc = firebase.firestore().collection("marble").doc("test");
+        this.doc = firebase.firestore().collection("marble").doc("test2");
     }
 
     start(): void {
@@ -84,6 +93,7 @@ export default class Game extends cc.Component {
         cc.find("scenebg").zIndex = 4;
         cc.find("scene1").zIndex = 5;
         cc.find("scene2").zIndex = 5;
+        cc.find("abort").zIndex = 6;
         cc.find("obstacle1").zIndex = 6;;
         cc.find("glass1").zIndex = 98;
         for (let index = 0; index < 7; index++) {
