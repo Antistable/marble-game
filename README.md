@@ -3,5 +3,7 @@
 
 一个弹珠web游戏，回忆童年。
 
+背景图片来源于网络，贴图为PPT设计（呜）
+
 预览：
 ![preview](https://user-images.githubusercontent.com/82582936/152682876-1671c0fe-dc81-4474-bdd5-8e34b84a0606.jpeg)
