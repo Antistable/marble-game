@@ -40,7 +40,7 @@ export default class Game extends cc.Component {
 
     currentMarble: cc.Node = null;
 
-    marbleList: Marble[] = [{ x: 307, y: 386, sprite: 0 }, { x: 307, y: 386, sprite: 1 }, { x: 307, y: 386, sprite: 2 }, { x: 307, y: 386, sprite: 3 }, { x: 307, y: 386, sprite: 4 }, { x: 307, y: 386, sprite: 5 }, { x: 307, y: 386, sprite: 6 }, { x: 307, y: 386, sprite: 7 }, { x: 307, y: 386, sprite: 8 }];
+    marbleList: Marble[] = [{ x: 362, y: 386, sprite: 0 }, { x: 362, y: 386, sprite: 1 }, { x: 362, y: 386, sprite: 2 }, { x: 362, y: 386, sprite: 3 }, { x: 362, y: 386, sprite: 4 }, { x: 362, y: 386, sprite: 5 }, { x: 362, y: 386, sprite: 6 }, { x: 362, y: 386, sprite: 7 }, { x: 362, y: 386, sprite: 8 }];
 
 
     @property(cc.Prefab)
@@ -81,7 +81,7 @@ export default class Game extends cc.Component {
     }
 
     start(): void {
-        if (new Date().getHours() < 1) {
+        if (new Date().getHours() < 18) {
             cc.find("fg2").destroy();
             cc.find("bg2").destroy();
             cc.find("tutorial2").destroy();
@@ -111,21 +111,21 @@ export default class Game extends cc.Component {
         cc.find("obstacle1").zIndex = 6;
         cc.find("glass1").zIndex = 98;
 
-        //初始化场景障碍物
+        //初始化场景障碍
         for (let index = 0; index < 8; index++) {
-            this.initObstacle(448 - index * 50, 510);
+            this.initObstacle(504 - index * 50, 510);
         }
         for (let index = 0; index < 7; index++) {
-            this.initObstacle(423 - index * 50, 550);
+            this.initObstacle(479 - index * 50, 550);
         }
         for (let index = 0; index < 8; index++) {
-            this.initObstacle(448 - index * 50, 590);
+            this.initObstacle(504 - index * 50, 590);
         }
         for (let index = 0; index < 7; index++) {
-            this.initObstacle(423 - index * 50, 630);
+            this.initObstacle(479 - index * 50, 630);
         }
         for (let index = 0; index < 8; index++) {
-            this.lines[index] = this.initLine(448 - index * 50);
+            this.lines[index] = this.initLine(504 - index * 50);
         }
         this.randomLines();
 
@@ -201,10 +201,10 @@ export default class Game extends cc.Component {
 
     settle(marbleX: number): void {
         let createdMarbles: cc.Node[] = [];
-        const marbleLineIndex: number = Math.floor((473 - marbleX) / 50);
+        const marbleLineIndex: number = Math.floor((529 - marbleX) / 50);
         if (this.lines[marbleLineIndex]?.getComponent(cc.Sprite)?.spriteFrame?.name === this.greenLineSprite.name) {
             for (let index = 0; index < 8 - this.greenLineNum; index++) {
-                createdMarbles.push(this.initMarble({ sprite: Math.floor(Math.random() * 8), x: 307, y: 386 }));
+                createdMarbles.push(this.initMarble({ sprite: Math.floor(Math.random() * 8), x: 363, y: 386 }));
             }
             this.scheduleOnce((): void => {
                 createdMarbles.forEach((marble: cc.Node, index: number) => {

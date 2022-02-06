@@ -41,7 +41,7 @@ export default class Marble extends cc.Component {
 
     dragOver(event: cc.Touch) {
         if (this.Game.State === this.Game.Drag) {
-            if (event.getLocation().sub(v2(500, 600)).mag() < 15) {
+            if (event.getLocation().sub(v2(558, 598)).mag() < 15) {
                 this.node.zIndex = 6;
                 this.Game.State = this.Game.DragOver;
                 this.getComponent(RigidBody).active = true;

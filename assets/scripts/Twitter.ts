@@ -20,7 +20,7 @@ export default class Twitter extends cc.Component {
         this.node.angle += this.turnUp ? dt * 36 : -dt * 36;
 
         this.node.x += dt * 200;
-        if (this.node.x >= 650) {
+        if (this.node.x >= 800) {
             this.node.x = -100;
             this.node.y = Math.random() * 130 + 770;
         }
