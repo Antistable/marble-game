@@ -245,4 +245,5 @@ export default class Game extends cc.Component {
             }
         }
     }
+    
 }

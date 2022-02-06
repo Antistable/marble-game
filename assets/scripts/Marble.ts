@@ -63,4 +63,5 @@ export default class Marble extends cc.Component {
             this.Game.settle(this.node.x);
         }
     }
+    
 }

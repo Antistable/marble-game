@@ -8,7 +8,7 @@ export default class Twitter extends cc.Component {
 
     onLoad() {
         this.node.on(TOUCH_END, (): void => {
-            cc.sys.openURL(`https://twitter.com/intent/tweet?text=A marble game!&url=${window.location.href}`);
+            cc.sys.openURL(`https://twitter.com/intent/tweet?text=Biubiubiu~%20A%20marble%20game!&url=${window.location.href}`);
         }, this);
 
         this.schedule((): void => {
