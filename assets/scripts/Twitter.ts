@@ -7,17 +7,17 @@ export default class Twitter extends cc.Component {
     turnUp: boolean = true;
 
     onLoad() {
-        this.node.on(TOUCH_END, () => {
+        this.node.on(TOUCH_END, (): void => {
             cc.sys.openURL("https://twitter.com/intent/tweet?text=A marble game!&url=");
         }, this);
 
-        this.schedule(() => {
+        this.schedule((): void => {
             this.turnUp = !this.turnUp;
-        }, 1)
+        }, 1);
     }
 
-    update(dt) {
-        this.node.rotation += this.turnUp ? dt * 36 : -dt * 36;
+    update(dt: number) {
+        this.node.angle += this.turnUp ? dt * 36 : -dt * 36;
 
         this.node.x += dt * 200;
         if (this.node.x >= 650) {

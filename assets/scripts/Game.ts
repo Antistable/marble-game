@@ -1,9 +1,10 @@
 const { ccclass, property } = cc._decorator;
-const { v2 } = cc;
+const { v2, audioEngine } = cc;
 const { TOUCH_END } = cc.Node.EventType;
 
-import * as firebase from 'firebase/app';
-import 'firebase/firestore';
+import * as firebase from "firebase/app";
+import "firebase/firestore";
+import "firebase/auth";
 
 interface Marble {
     x: number;
@@ -13,6 +14,9 @@ interface Marble {
 
 @ccclass
 export default class Game extends cc.Component {
+
+    @property(cc.AudioClip)
+    music: cc.AudioClip = null;
 
     //States
     readonly Drag: number = 1;
@@ -63,15 +67,6 @@ export default class Game extends cc.Component {
 
     onLoad(): void {
         cc.director.getPhysicsManager().enabled = true;
-
-        cc.find("abort").on(TOUCH_END, (): void => {
-            if (this.State === this.Launch) {
-                this.currentMarble.destroy();
-                this.State = this.Settle;
-                this.randomLines();
-            }
-        })
-
         const firebaseConfig = {
             apiKey: "AIzaSyBP0Z9U6NtSzV_ew6aHGgeu0pOIfqiOJik",
             authDomain: "googlify-dev.firebaseapp.com",
@@ -81,10 +76,12 @@ export default class Game extends cc.Component {
             appId: "1:579802640871:web:6919d595e6f5bcd2d44d42"
         };
         this.app = firebase.initializeApp(firebaseConfig);
-        this.doc = firebase.firestore().collection("marble").doc("test");
+
+        audioEngine.play(this.music, true, 1);
     }
 
     start(): void {
+        cc.find("Twitter").zIndex = 1;
         cc.find("body1").zIndex = 1;
         cc.find("glass2").zIndex = 1;
         cc.find("rainbow").zIndex = 2;
@@ -93,16 +90,18 @@ export default class Game extends cc.Component {
         cc.find("scenebg").zIndex = 4;
         cc.find("scene1").zIndex = 5;
         cc.find("scene2").zIndex = 5;
-        cc.find("abort").zIndex = 6;
-        cc.find("obstacle1").zIndex = 6;;
+        cc.find("Abort").zIndex = 6;
+        cc.find("obstacle1").zIndex = 6;
         cc.find("glass1").zIndex = 98;
-        for (let index = 0; index < 7; index++) {
+
+        //初始化场景障碍物
+        for (let index = 0; index < 8; index++) {
             this.initObstacle(448 - index * 50, 510);
         }
         for (let index = 0; index < 7; index++) {
             this.initObstacle(423 - index * 50, 550);
         }
-        for (let index = 0; index < 7; index++) {
+        for (let index = 0; index < 8; index++) {
             this.initObstacle(448 - index * 50, 590);
         }
         for (let index = 0; index < 7; index++) {
@@ -113,31 +112,40 @@ export default class Game extends cc.Component {
         }
         this.randomLines();
 
-        this.doc.get().then((doc: firebase.firestore.DocumentData) => {
-            if (doc.exists) {
-                this.marbleList = doc.data().data;
-                this.marbleList.forEach((marble: Marble, index: number) => {
-                    (this.initMarble(marble) as any).index = index;
-                })
+        const auth: firebase.auth.Auth = firebase.auth();
+        auth.onAuthStateChanged((user: firebase.User) => {
+            if (user) {
+                this.doc = firebase.firestore().collection("marble").doc(user.uid);
+                this.doc.get().then((doc: firebase.firestore.DocumentData) => {
+                    if (doc.exists) {
+                        this.marbleList = doc.data().data;
+                        this.marbleList.forEach((marble: Marble, index: number) => {
+                            (this.initMarble(marble) as any).index = index;
+                        })
+                    }
+                    else {
+                        let createdMarbles: cc.Node[] = [];
+                        this.marbleList.forEach((marble: Marble) => {
+                            createdMarbles.push(this.initMarble(marble));
+                        })
+                        this.scheduleOnce((): void => {
+                            this.marbleList = [];
+                            createdMarbles.forEach((marble: cc.Node, index: number) => {
+                                const name = marble.getComponent(cc.Sprite).spriteFrame?.name;
+                                this.marbleList.push({
+                                    x: marble.x,
+                                    y: marble.y,
+                                    sprite: this.marbleSprites.map((sprite: cc.SpriteFrame) => { return sprite.name }).indexOf(name)
+                                });
+                                (createdMarbles[index] as any).index = this.marbleList.length - 1;
+                            });
+                            this.updateMarbleList();
+                        }, 2);
+                    }
+                });
             }
             else {
-                let createdMarbles: cc.Node[] = [];
-                this.marbleList.forEach((marble: Marble) => {
-                    createdMarbles.push(this.initMarble(marble));
-                })
-                this.scheduleOnce((): void => {
-                    this.marbleList = [];
-                    createdMarbles.forEach((marble: cc.Node, index: number) => {
-                        const name = marble.getComponent(cc.Sprite).spriteFrame?.name;
-                        this.marbleList.push({
-                            x: marble.x,
-                            y: marble.y,
-                            sprite: this.marbleSprites.map((sprite: cc.SpriteFrame) => { return sprite.name }).indexOf(name)
-                        });
-                        (createdMarbles[index] as any).index = this.marbleList.length - 1;
-                    });
-                    this.updateMarbleList();
-                }, 2);
+                cc.sys.openURL("../");
             }
         });
     }
@@ -160,7 +168,7 @@ export default class Game extends cc.Component {
     randomLines(): void {
         this.greenLineNum = 0;
         for (let index = 0; index < 8; index++) {
-            const isGreen: boolean = Boolean(Math.floor(Math.random() * 1.9));
+            const isGreen: boolean = Boolean(Math.floor(Math.random() * 1.8));
             if (isGreen === true) {
                 this.lines[index].getComponent(cc.Sprite).spriteFrame = this.greenLineSprite;
                 this.greenLineNum += 1;
