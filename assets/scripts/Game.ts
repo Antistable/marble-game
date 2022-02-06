@@ -81,6 +81,23 @@ export default class Game extends cc.Component {
     }
 
     start(): void {
+        if (new Date().getHours() < 1) {
+            cc.find("fg2").destroy();
+            cc.find("bg2").destroy();
+            cc.find("tutorial2").destroy();
+            cc.find("moon").destroy();
+            cc.find("sun").on(TOUCH_END, (): void => {
+                cc.sys.openURL("https://github.com/Antistable/marble-game");
+            });
+        }
+        else{
+            cc.find("bg").destroy();
+            cc.find("sun").destroy();
+            cc.find("tutorial").destroy();
+            cc.find("moon").on(TOUCH_END, (): void => {
+                cc.sys.openURL("https://github.com/Antistable/marble-game");
+            });
+        }
         cc.find("Twitter").zIndex = 1;
         cc.find("body1").zIndex = 1;
         cc.find("glass2").zIndex = 1;
