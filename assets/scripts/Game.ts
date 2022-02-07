@@ -90,7 +90,7 @@ export default class Game extends cc.Component {
                 cc.sys.openURL("https://github.com/Antistable/marble-game");
             });
         }
-        else{
+        else {
             cc.find("bg").destroy();
             cc.find("sun").destroy();
             cc.find("tutorial").destroy();
@@ -147,16 +147,7 @@ export default class Game extends cc.Component {
                         })
                         this.scheduleOnce((): void => {
                             this.marbleList = [];
-                            createdMarbles.forEach((marble: cc.Node, index: number) => {
-                                const name = marble.getComponent(cc.Sprite).spriteFrame?.name;
-                                this.marbleList.push({
-                                    x: marble.x,
-                                    y: marble.y,
-                                    sprite: this.marbleSprites.map((sprite: cc.SpriteFrame) => { return sprite.name }).indexOf(name)
-                                });
-                                (createdMarbles[index] as any).index = this.marbleList.length - 1;
-                            });
-                            this.updateMarbleList();
+                            this.updateMarbleList(createdMarbles);
                         }, 2);
                     }
                 });
@@ -203,21 +194,13 @@ export default class Game extends cc.Component {
         let createdMarbles: cc.Node[] = [];
         const marbleLineIndex: number = Math.floor((529 - marbleX) / 50);
         if (this.lines[marbleLineIndex]?.getComponent(cc.Sprite)?.spriteFrame?.name === this.greenLineSprite.name) {
-            for (let index = 0; index < 8 - this.greenLineNum; index++) {
+            for (let index = 0; index < (8 - this.greenLineNum) * 0.8; index++) {
                 createdMarbles.push(this.initMarble({ sprite: Math.floor(Math.random() * 8), x: 363, y: 386 }));
             }
             this.scheduleOnce((): void => {
-                createdMarbles.forEach((marble: cc.Node, index: number) => {
-                    this.marbleList.push({
-                        x: marble.x,
-                        y: marble.y,
-                        sprite: this.marbleSprites.map((sprite: cc.SpriteFrame) => { return sprite.name }).indexOf(marble.getComponent(cc.Sprite).spriteFrame.name)
-                    });
-                    (createdMarbles[index] as any).index = this.marbleList.length - 1;
-                });
-                this.updateMarbleList();
+                this.updateMarbleList(createdMarbles);
             }, 2);
-        }
+        } //Win
         this.scheduleOnce(this.randomLines, 2);
     }
 
@@ -229,10 +212,22 @@ export default class Game extends cc.Component {
         return marble;
     }
 
-    updateMarbleList(): void {
+    updateFirestore(): void {
         this.doc.set({
             data: this.marbleList
         });
+    }
+
+    updateMarbleList(createdMarbles: cc.Node[]): void {
+        createdMarbles.forEach((marble: cc.Node, index: number) => {
+            this.marbleList.push({
+                x: marble.x,
+                y: marble.y,
+                sprite: this.marbleSprites.map((sprite: cc.SpriteFrame) => { return sprite.name }).indexOf(marble.getComponent(cc.Sprite).spriteFrame?.name)
+            });
+            (createdMarbles[index] as any).index = this.marbleList.length - 1;
+        });
+        this.updateFirestore();
     }
 
     update(dt: number): void {
@@ -245,5 +240,5 @@ export default class Game extends cc.Component {
             }
         }
     }
-    
+
 }

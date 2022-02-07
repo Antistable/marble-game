@@ -9,7 +9,7 @@ export default class NewClass extends cc.Component {
 
     rotate: boolean = false;
 
-    onLoad() {
+    onLoad(): void {
         this.Game = cc.find("Game").getComponent(Game);
 
         this.node.on(TOUCH_END, (): void => {
