@@ -9,6 +9,6 @@
 
 ![Preview](https://user-images.githubusercontent.com/82582936/152682876-1671c0fe-dc81-4474-bdd5-8e34b84a0606.jpeg)
 
-每次投掷的期望值：
+每次投掷的期望值（计算方法见ExpectationValueCalculator.cpp):
 
-![Expectation Value](https://user-images.githubusercontent.com/82582936/152939191-e59886c2-3df3-4289-a4fc-b158236c5bb0.jpeg)
+![Expectation Value](https://user-images.githubusercontent.com/82582936/152948132-34b2ede2-26d8-4e7f-8592-72fc51905a30.jpeg)
