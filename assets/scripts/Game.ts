@@ -194,7 +194,7 @@ export default class Game extends cc.Component {
         let createdMarbles: cc.Node[] = [];
         const marbleLineIndex: number = Math.floor((529 - marbleX) / 50);
         if (this.lines[marbleLineIndex]?.getComponent(cc.Sprite)?.spriteFrame?.name === this.greenLineSprite.name) {
-            for (let index = 0; index < (8 - this.greenLineNum) * 0.8; index++) {
+            for (let index = 0; index < (8 - this.greenLineNum) * 0.7; index++) {
                 createdMarbles.push(this.initMarble({ sprite: Math.floor(Math.random() * 8), x: 363, y: 386 }));
             }
             this.scheduleOnce((): void => {
