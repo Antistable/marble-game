@@ -1,5 +1,5 @@
 const { ccclass, property } = cc._decorator;
-const { v2, audioEngine } = cc;
+const { v2, audioEngine, director, macro } = cc;
 const { TOUCH_END } = cc.Node.EventType;
 
 import * as firebase from "firebase/app";
@@ -66,7 +66,9 @@ export default class Game extends cc.Component {
     doc: firebase.firestore.DocumentReference;
 
     onLoad(): void {
-        cc.director.getPhysicsManager().enabled = true;
+        audioEngine.play(this.music, true, 1);
+        macro.ENABLE_MULTI_TOUCH = false;
+        director.getPhysicsManager().enabled = true;
         const firebaseConfig = {
             apiKey: "AIzaSyBP0Z9U6NtSzV_ew6aHGgeu0pOIfqiOJik",
             authDomain: "googlify-dev.firebaseapp.com",
@@ -76,8 +78,6 @@ export default class Game extends cc.Component {
             appId: "1:579802640871:web:6919d595e6f5bcd2d44d42"
         };
         this.app = firebase.initializeApp(firebaseConfig);
-
-        audioEngine.play(this.music, true, 1);
     }
 
     start(): void {
@@ -131,29 +131,29 @@ export default class Game extends cc.Component {
 
         const auth: firebase.auth.Auth = firebase.auth();
         auth.onAuthStateChanged((user: firebase.User) => {
-            if (user) {
+            if (user) { // 已登入
                 this.doc = firebase.firestore().collection("marble").doc(user.uid);
                 this.doc.get().then((doc: firebase.firestore.DocumentData) => {
-                    if (doc.exists) {
+                    if (doc.exists) { // 已经有记录
                         this.marbleList = doc.data().data;
                         this.marbleList.forEach((marble: Marble, index: number) => {
                             (this.initMarble(marble) as any).index = index;
                         })
                     }
-                    else {
+                    else { // 新玩家
                         let createdMarbles: cc.Node[] = [];
                         this.marbleList.forEach((marble: Marble) => {
                             createdMarbles.push(this.initMarble(marble));
                         })
                         this.scheduleOnce((): void => {
                             this.marbleList = [];
-                            this.updateMarbleList(createdMarbles);
+                            this.updateMarbleList(createdMarbles); // 初始化marbleList
                         }, 2);
                     }
                 });
             }
             else {
-                cc.sys.openURL("../");
+                cc.sys.openURL("../"); // 返回主页登入
             }
         });
     }
@@ -162,14 +162,14 @@ export default class Game extends cc.Component {
         const obstacle3: cc.Node = cc.instantiate(this.obstacle3Prefab);
         obstacle3.setPosition(v2(x, y));
         obstacle3.zIndex = 6;
-        obstacle3.parent = cc.director.getScene();
+        obstacle3.parent = director.getScene();
     }
 
     initLine(x: number): cc.Node {
         const line: cc.Node = cc.instantiate(this.linePrefab);
         line.setPosition(v2(x, 467));
         line.zIndex = 6;
-        line.parent = cc.director.getScene();
+        line.parent = director.getScene();
         return line;
     }
 
@@ -193,14 +193,14 @@ export default class Game extends cc.Component {
     settle(marbleX: number): void {
         let createdMarbles: cc.Node[] = [];
         const marbleLineIndex: number = Math.floor((529 - marbleX) / 50);
-        if (this.lines[marbleLineIndex]?.getComponent(cc.Sprite)?.spriteFrame?.name === this.greenLineSprite.name) {
+        if (this.lines[marbleLineIndex]?.getComponent(cc.Sprite)?.spriteFrame?.name === this.greenLineSprite.name) /* 胜利 */ {
             for (let index = 0; index < (8 - this.greenLineNum) * 0.7; index++) {
                 createdMarbles.push(this.initMarble({ sprite: Math.floor(Math.random() * 8), x: 363, y: 386 }));
             }
             this.scheduleOnce((): void => {
                 this.updateMarbleList(createdMarbles);
             }, 2);
-        } //Win
+        }
         this.scheduleOnce(this.randomLines, 2);
     }
 
@@ -208,7 +208,7 @@ export default class Game extends cc.Component {
         const marble: cc.Node = cc.instantiate(this.marblePrefab);
         marble.setPosition(v2(config.x, config.y));
         marble.getComponent(cc.Sprite).spriteFrame = this.marbleSprites[config.sprite];
-        marble.parent = cc.director.getScene();
+        marble.parent = director.getScene();
         return marble;
     }
 
@@ -220,7 +220,7 @@ export default class Game extends cc.Component {
 
     updateMarbleList(createdMarbles: cc.Node[]): void {
         createdMarbles.forEach((marble: cc.Node, index: number) => {
-            this.marbleList.push({
+            this.marbleList.push({ // 记录刚创造的marble的位置和贴图
                 x: marble.x,
                 y: marble.y,
                 sprite: this.marbleSprites.map((sprite: cc.SpriteFrame) => { return sprite.name }).indexOf(marble.getComponent(cc.Sprite).spriteFrame?.name)
@@ -233,7 +233,7 @@ export default class Game extends cc.Component {
     update(dt: number): void {
         if (this.currentMarble !== null) {
             if (this.State === this.Settle && this.currentMarble.isValid) {
-                this.currentMarble.opacity -= dt * 100;
+                this.currentMarble.opacity -= dt * 100; // 将落定的marble渐隐
                 if (this.currentMarble.opacity <= 0) {
                     this.currentMarble.destroy();
                 }

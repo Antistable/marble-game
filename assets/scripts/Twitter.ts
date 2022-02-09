@@ -17,7 +17,7 @@ export default class Twitter extends cc.Component {
     }
 
     update(dt: number) {
-        this.node.angle += this.turnUp ? dt * 36 : -dt * 36;
+        this.node.angle += this.turnUp ? dt * 36 : -dt * 36; // 摇头
 
         this.node.x += dt * 200;
         if (this.node.x >= 800) {

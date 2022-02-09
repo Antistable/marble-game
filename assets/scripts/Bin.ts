@@ -17,9 +17,9 @@ export default class NewClass extends cc.Component {
     }
 
     click(): void {
-        this.node.opacity += 63;
+        this.node.opacity += 63; // 66 + 63 * 3 === 255
         if (++this.clickTime === 3) {
-            this.Game.doc.delete().then((): void => { location.reload() });
+            this.Game.doc.delete().then((): void => { location.reload(); });
         }
     }
 

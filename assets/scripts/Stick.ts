@@ -1,5 +1,5 @@
 import Game from "./Game";
-const { ccclass, property } = cc._decorator;
+const { ccclass } = cc._decorator;
 const { v2, RigidBody } = cc;
 const { TOUCH_START, TOUCH_MOVE, TOUCH_END, TOUCH_CANCEL } = cc.Node.EventType;
 
@@ -24,7 +24,7 @@ export default class Stick extends cc.Component {
             this.originalNodeY = this.node.y;
             this.originalMouseY = event.getLocation().y;
             const distance: number = event.getLocation().sub(v2(this.node.x - 2, this.node.y - 75)).mag();
-            if (distance < 15) {
+            if (distance < 15) /* 点击到了杆子尾部 */ {
                 this.Game.State = this.Game.MoveStick;
             }
         }
@@ -35,7 +35,7 @@ export default class Stick extends cc.Component {
         if (isOn) {
             const dy: number = this.originalMouseY - event.getLocation().y;
             this.node.y = this.originalNodeY - (dy > 100 ? 100 : (dy < 0 ? 0 : dy));
-            //this.node.y ∈ [this.originalNodeY - 100, this.originalNodeY]
+            // this.node.y ∈ [this.originalNodeY - 100, this.originalNodeY]
         }
     }
 
@@ -43,7 +43,7 @@ export default class Stick extends cc.Component {
         const isOn: boolean = this.Game.State === this.Game.MoveStick;
         if (isOn) {
             const dy: number = this.originalMouseY - event.getLocation().y;
-            if (dy <= 0) {
+            if (dy <= 0) { // 取消
                 this.node.y = this.originalNodeY;
                 this.Game.State = this.Game.MoveStick;
             }
@@ -51,10 +51,10 @@ export default class Stick extends cc.Component {
                 this.Game.currentMarble.getComponent(RigidBody).applyLinearImpulse(v2(0, (dy > 100 ? 100 : dy) * 5 + 600), v2(this.node.position.x, this.node.position.y), true);
                 this.node.y = this.originalNodeY;
                 this.Game.marbleList.splice((this.Game.currentMarble as any).index, 1);
-                this.Game.updateFirestore();
+                this.Game.updateFirestore(); // 从Firestore删除当前marble
                 this.Game.State = this.Game.Launch;
             }
         }
     }
-    
+
 }

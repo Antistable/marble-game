@@ -18,7 +18,7 @@ export default class NewClass extends cc.Component {
                 this.Game.State = this.Game.Settle;
                 this.Game.randomLines();
                 this.rotate = true;
-                this.schedule((): void => {
+                this.scheduleOnce((): void => {
                     this.rotate = false;
                 }, 1)
             }

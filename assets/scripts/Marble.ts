@@ -1,6 +1,6 @@
 import Game from "./Game";
 const { v2, RigidBody } = cc;
-const { ccclass, property } = cc._decorator;
+const { ccclass } = cc._decorator;
 const { TOUCH_START, TOUCH_MOVE, TOUCH_END, TOUCH_CANCEL } = cc.Node.EventType;
 
 @ccclass
@@ -21,7 +21,7 @@ export default class Marble extends cc.Component {
     }
 
     dragStart() {
-        if (this.Game.State === this.Game.Settle && !(this.Game.currentMarble?.isValid /*未destroy()*/ ?? this.Game.currentMarble !== null /*仍在drag或已投入*/)) {
+        if (this.Game.State === this.Game.Settle && !(this.Game.currentMarble?.isValid /* 未destroy() */ ?? this.Game.currentMarble !== null /* 仍在drag或已投入 */)) {
             this.positionBeforeDrag = this.node.position;
             this.Game.State = this.Game.Drag;
             this.node.zIndex = 99;
@@ -35,7 +35,7 @@ export default class Marble extends cc.Component {
 
     drag(event: cc.Touch) {
         if (this.Game.State === this.Game.Drag) {
-            this.node.setPosition(event.getLocation());
+            this.node.setPosition(event.getLocation()); // 保持鼠标位置
         }
     }
 
@@ -63,5 +63,5 @@ export default class Marble extends cc.Component {
             this.Game.settle(this.node.x);
         }
     }
-    
+
 }
