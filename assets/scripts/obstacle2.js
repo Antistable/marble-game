@@ -1,7 +1,7 @@
 cc.Class({
     extends: cc.Component,
 
-    start () {
+    start() {
         this.node.zIndex = 6;
     }
 });
