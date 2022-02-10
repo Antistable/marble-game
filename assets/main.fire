@@ -5477,7 +5477,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "extraMarbleNum",
+    "_name": "ExtraMarbleNum",
     "_objFlags": 0,
     "_parent": {
       "__id__": 1
@@ -5686,7 +5686,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "label",
+    "_name": "arrow",
     "_objFlags": 0,
     "_parent": {
       "__id__": 1
