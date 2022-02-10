@@ -13,7 +13,7 @@ export default class NewClass extends cc.Component {
     }
 
     createMarble() {
-        if (this.Game.State == this.Game.Wait && this.Game.marbleList.length < 80 && this.Game.extraMarbleNum > 0) {
+        if (this.Game.State == this.Game.Wait && this.Game.marbleList.length < 50 && this.Game.extraMarbleNum > 0) {
             this.Game.extraMarbleNum--;
             this.Game.State = this.Game.CreateMarbles;
             let createdMarbles = [];

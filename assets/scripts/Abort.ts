@@ -16,6 +16,7 @@ export default class NewClass extends cc.Component {
             if (this.Game.State === this.Game.Launch) {
                 this.Game.currentMarble.destroy();
                 this.Game.State = this.Game.Wait;
+                this.Game.updateFirestore();
                 this.Game.randomLines();
                 this.rotate = true;
                 this.scheduleOnce((): void => {

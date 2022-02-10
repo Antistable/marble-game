@@ -204,7 +204,7 @@ export default class Game extends cc.Component {
         const marbleLineIndex: number = Math.floor((529 - marbleX) / 50);
         if (this.lines[marbleLineIndex]?.getComponent(cc.Sprite)?.spriteFrame?.name === this.greenLineSprite.name) /* 胜利 */ {
             for (let index = 0; index < (8 - this.greenLineNum) * 0.7; index++) {
-                if (this.marbleList.length + createdMarbles.length < 80) {
+                if (this.marbleList.length + createdMarbles.length < 50) {
                     createdMarbles.push(this.initMarble({ sprite: Math.floor(Math.random() * 8), x: 363, y: 386 }));
                 }
                 else {
@@ -250,7 +250,7 @@ export default class Game extends cc.Component {
     redrawText(): void {
         cc.find("marbleNum").getComponent(Label).string = `${this.marbleList.length}`;
         cc.find("ExtraMarbleNum").getComponent(Label).string = `[+${this.extraMarbleNum}]`;
-        if (this.marbleList.length < 80 && this.extraMarbleNum > 0) {
+        if (this.marbleList.length < 50 && this.extraMarbleNum > 0) {
             cc.find("arrow").zIndex = 3;
             cc.find("mouse").zIndex = 3;
         }
