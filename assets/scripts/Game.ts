@@ -109,8 +109,6 @@ export default class Game extends cc.Component {
         cc.find("body2").zIndex = 2;
         cc.find("marbleNum").zIndex = 3;
         cc.find("ExtraMarbleNum").zIndex = 3;
-        cc.find("arrow").zIndex = 3;
-        cc.find("mouse").zIndex = 3;
         cc.find("Stick").zIndex = 3;
         cc.find("scenebg").zIndex = 4;
         cc.find("scene1").zIndex = 5;
@@ -252,6 +250,14 @@ export default class Game extends cc.Component {
     redrawText(): void {
         cc.find("marbleNum").getComponent(Label).string = `${this.marbleList.length}`;
         cc.find("ExtraMarbleNum").getComponent(Label).string = `[+${this.extraMarbleNum}]`;
+        if (this.marbleList.length < 80 && this.extraMarbleNum > 0) {
+            cc.find("arrow").zIndex = 3;
+            cc.find("mouse").zIndex = 3;
+        }
+        else {
+            cc.find("arrow").zIndex = 0;
+            cc.find("mouse").zIndex = 0;
+        }
     }
 
     update(dt: number): void {
