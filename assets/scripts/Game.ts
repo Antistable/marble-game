@@ -1,12 +1,13 @@
 const { ccclass, property } = cc._decorator;
-const { v2, audioEngine, director, macro } = cc;
+const { v2, audioEngine, director, macro, Label } = cc;
 const { TOUCH_END } = cc.Node.EventType;
 
 import * as firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/auth";
+import Marble from "./Marble";
 
-interface Marble {
+interface MarbleProperty {
     x: number;
     y: number;
     sprite: number;
@@ -27,9 +28,11 @@ export default class Game extends cc.Component {
 
     readonly Launch: number = 4;
 
-    readonly Settle: number = 5;
+    readonly CreateMarbles: number = 5;
 
-    State: number = this.Settle;
+    readonly Wait: number = 6;
+
+    State: number = this.Wait;
 
 
     @property(cc.Prefab)
@@ -40,12 +43,13 @@ export default class Game extends cc.Component {
 
     currentMarble: cc.Node = null;
 
-    marbleList: Marble[] = [{ x: 362, y: 386, sprite: 0 }, { x: 362, y: 386, sprite: 1 }, { x: 362, y: 386, sprite: 2 }, { x: 362, y: 386, sprite: 3 }, { x: 362, y: 386, sprite: 4 }, { x: 362, y: 386, sprite: 5 }, { x: 362, y: 386, sprite: 6 }, { x: 362, y: 386, sprite: 7 }, { x: 362, y: 386, sprite: 8 }];
+    marbleList: MarbleProperty[] = [{ x: 362, y: 386, sprite: 0 }, { x: 362, y: 386, sprite: 1 }, { x: 362, y: 386, sprite: 2 }, { x: 362, y: 386, sprite: 3 }, { x: 362, y: 386, sprite: 4 }, { x: 362, y: 386, sprite: 5 }, { x: 362, y: 386, sprite: 6 }, { x: 362, y: 386, sprite: 7 }];
+
+    extraMarbleNum: number = 0;
 
 
     @property(cc.Prefab)
     obstacle3Prefab: cc.Prefab = null;
-
 
     @property(cc.Prefab)
     linePrefab: cc.Prefab = null;
@@ -103,6 +107,10 @@ export default class Game extends cc.Component {
         cc.find("glass2").zIndex = 1;
         cc.find("rainbow").zIndex = 2;
         cc.find("body2").zIndex = 2;
+        cc.find("marbleNum").zIndex = 3;
+        cc.find("ExtraMarbleNum").zIndex = 3;
+        cc.find("arrow").zIndex = 3;
+        cc.find("mouse").zIndex = 3;
         cc.find("Stick").zIndex = 3;
         cc.find("scenebg").zIndex = 4;
         cc.find("scene1").zIndex = 5;
@@ -136,13 +144,15 @@ export default class Game extends cc.Component {
                 this.doc.get().then((doc: firebase.firestore.DocumentData) => {
                     if (doc.exists) { // 已经有记录
                         this.marbleList = doc.data().data;
-                        this.marbleList.forEach((marble: Marble, index: number) => {
-                            (this.initMarble(marble) as any).index = index;
+                        this.extraMarbleNum = doc.data().extra;
+                        this.redrawText();
+                        this.marbleList.forEach((marble: MarbleProperty, index: number) => {
+                            this.initMarble(marble).getComponent(Marble).index = index;
                         })
                     }
                     else { // 新玩家
                         let createdMarbles: cc.Node[] = [];
-                        this.marbleList.forEach((marble: Marble) => {
+                        this.marbleList.forEach((marble: MarbleProperty) => {
                             createdMarbles.push(this.initMarble(marble));
                         })
                         this.scheduleOnce((): void => {
@@ -191,20 +201,27 @@ export default class Game extends cc.Component {
     }
 
     settle(marbleX: number): void {
+        this.State = this.CreateMarbles;
         let createdMarbles: cc.Node[] = [];
         const marbleLineIndex: number = Math.floor((529 - marbleX) / 50);
         if (this.lines[marbleLineIndex]?.getComponent(cc.Sprite)?.spriteFrame?.name === this.greenLineSprite.name) /* 胜利 */ {
             for (let index = 0; index < (8 - this.greenLineNum) * 0.7; index++) {
-                createdMarbles.push(this.initMarble({ sprite: Math.floor(Math.random() * 8), x: 363, y: 386 }));
+                if (this.marbleList.length + createdMarbles.length < 80) {
+                    createdMarbles.push(this.initMarble({ sprite: Math.floor(Math.random() * 8), x: 363, y: 386 }));
+                }
+                else {
+                    this.extraMarbleNum++;
+                }
             }
-            this.scheduleOnce((): void => {
-                this.updateMarbleList(createdMarbles);
-            }, 2);
         }
+        this.scheduleOnce((): void => {
+            this.State = this.Wait;
+            this.updateMarbleList(createdMarbles);
+        }, 2);
         this.scheduleOnce(this.randomLines, 2);
     }
 
-    initMarble(config: Marble): cc.Node {
+    initMarble(config: MarbleProperty): cc.Node {
         const marble: cc.Node = cc.instantiate(this.marblePrefab);
         marble.setPosition(v2(config.x, config.y));
         marble.getComponent(cc.Sprite).spriteFrame = this.marbleSprites[config.sprite];
@@ -214,7 +231,8 @@ export default class Game extends cc.Component {
 
     updateFirestore(): void {
         this.doc.set({
-            data: this.marbleList
+            data: this.marbleList,
+            extra: this.extraMarbleNum
         });
     }
 
@@ -225,20 +243,23 @@ export default class Game extends cc.Component {
                 y: marble.y,
                 sprite: this.marbleSprites.map((sprite: cc.SpriteFrame) => { return sprite.name }).indexOf(marble.getComponent(cc.Sprite).spriteFrame?.name)
             });
-            (createdMarbles[index] as any).index = this.marbleList.length - 1;
+            createdMarbles[index].getComponent(Marble).index = this.marbleList.length - 1;
         });
+        this.redrawText();
         this.updateFirestore();
     }
 
+    redrawText(): void {
+        cc.find("marbleNum").getComponent(Label).string = `${this.marbleList.length}`;
+        cc.find("ExtraMarbleNum").getComponent(Label).string = `[+${this.extraMarbleNum}]`;
+    }
+
     update(dt: number): void {
-        if (this.currentMarble !== null) {
-            if (this.State === this.Settle && this.currentMarble.isValid) {
-                this.currentMarble.opacity -= dt * 100; // 将落定的marble渐隐
-                if (this.currentMarble.opacity <= 0) {
-                    this.currentMarble.destroy();
-                }
+        if (this.State === this.CreateMarbles && this.currentMarble?.isValid) {
+            this.currentMarble.opacity -= dt * 130; // 将落定的marble渐隐
+            if (this.currentMarble.opacity <= 0) {
+                this.currentMarble.destroy();
             }
         }
     }
-
 }

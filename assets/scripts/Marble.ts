@@ -12,7 +12,7 @@ export default class Marble extends cc.Component {
 
     positionBeforeDrag: cc.Vec3 = null;
 
-    id: number = -1;
+    index: number = -1;
 
     start(): void {
         this.Game = cc.find("Game").getComponent(Game);
@@ -21,7 +21,7 @@ export default class Marble extends cc.Component {
     }
 
     dragStart() {
-        if (this.Game.State === this.Game.Settle && !(this.Game.currentMarble?.isValid /* 未destroy() */ ?? this.Game.currentMarble !== null /* 仍在drag或已投入 */)) {
+        if (this.Game.State === this.Game.Wait) {
             this.positionBeforeDrag = this.node.position;
             this.Game.State = this.Game.Drag;
             this.node.zIndex = 99;
@@ -35,7 +35,7 @@ export default class Marble extends cc.Component {
 
     drag(event: cc.Touch) {
         if (this.Game.State === this.Game.Drag) {
-            this.node.setPosition(event.getLocation()); // 保持鼠标位置
+            this.node.setPosition(event.getLocation()); // 保持在鼠标位置
         }
     }
 
@@ -48,18 +48,17 @@ export default class Marble extends cc.Component {
             }
             else {
                 this.node.position = this.positionBeforeDrag;
-                this.Game.State = this.Game.Settle;
+                this.Game.State = this.Game.Wait;
                 this.node.zIndex = 0;
                 this.getComponent(RigidBody).active = true;
                 this.Game.currentMarble = null;
-                this.Game.State = this.Game.Settle;
+                this.Game.State = this.Game.Wait;
             }
         }
     }
 
     onBeginContact(contact: cc.PhysicsContact, selfCollider: cc.PhysicsCollider, otherCollider: cc.PhysicsCollider): void {
         if (otherCollider.node.name === "scene2" && this.Game.State === this.Game.Launch) {
-            this.Game.State = this.Game.Settle;
             this.Game.settle(this.node.x);
         }
     }

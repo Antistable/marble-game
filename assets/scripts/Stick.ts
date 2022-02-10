@@ -1,4 +1,5 @@
 import Game from "./Game";
+import Marble from "./Marble";
 const { ccclass } = cc._decorator;
 const { v2, RigidBody } = cc;
 const { TOUCH_START, TOUCH_MOVE, TOUCH_END, TOUCH_CANCEL } = cc.Node.EventType;
@@ -50,8 +51,8 @@ export default class Stick extends cc.Component {
             else {
                 this.Game.currentMarble.getComponent(RigidBody).applyLinearImpulse(v2(0, (dy > 100 ? 100 : dy) * 5 + 600), v2(this.node.position.x, this.node.position.y), true);
                 this.node.y = this.originalNodeY;
-                this.Game.marbleList.splice((this.Game.currentMarble as any).index, 1);
-                this.Game.updateFirestore(); // 从Firestore删除当前marble
+                this.Game.marbleList.splice(this.Game.currentMarble.getComponent(Marble).index, 1); // 从marbleList删除当前marble
+                this.Game.redrawText();
                 this.Game.State = this.Game.Launch;
             }
         }

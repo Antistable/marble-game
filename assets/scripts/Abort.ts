@@ -15,7 +15,7 @@ export default class NewClass extends cc.Component {
         this.node.on(TOUCH_END, (): void => {
             if (this.Game.State === this.Game.Launch) {
                 this.Game.currentMarble.destroy();
-                this.Game.State = this.Game.Settle;
+                this.Game.State = this.Game.Wait;
                 this.Game.randomLines();
                 this.rotate = true;
                 this.scheduleOnce((): void => {
