@@ -3,7 +3,7 @@ const { ccclass } = cc._decorator;
 const { TOUCH_END } = cc.Node.EventType;
 
 @ccclass
-export default class NewClass extends cc.Component {
+export default class Extra extends cc.Component {
 
     Game: Game = null;
 
