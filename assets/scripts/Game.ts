@@ -3,6 +3,7 @@ const { v2, audioEngine, director, macro, Label } = cc;
 const { TOUCH_END } = cc.Node.EventType;
 
 import * as firebase from "firebase/app";
+import "firebase/analytics";
 import "firebase/firestore";
 import "firebase/auth";
 import Marble from "./Marble";
@@ -65,8 +66,6 @@ export default class Game extends cc.Component {
     greenLineNum: number = 0;
 
 
-    app: firebase.app.App;
-
     doc: firebase.firestore.DocumentReference;
 
     onLoad(): void {
@@ -81,7 +80,8 @@ export default class Game extends cc.Component {
             messagingSenderId: "579802640871",
             appId: "1:579802640871:web:6919d595e6f5bcd2d44d42"
         };
-        this.app = firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
     }
 
     start(): void {

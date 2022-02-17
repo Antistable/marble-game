@@ -1,6 +1,6 @@
 {
   "dependencies": {
     "@firebase/webchannel-wrapper": "0.2.7",
-    "firebase": "4.12.0"
+    "firebase": "7.20.0"
   }
 }

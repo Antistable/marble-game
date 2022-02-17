@@ -1,5 +1,5 @@
 # Marbles
->A game of marbles, made with Cocos Creator (2.4.0), based on Firebase (4.12.0)
+>A game of marbles, made with Cocos Creator (2.4.0), based on Firebase (7.20.0)
 
 一个弹珠 Web 游戏，回忆童年。
 
