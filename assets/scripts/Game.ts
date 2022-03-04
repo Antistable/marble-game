@@ -78,7 +78,8 @@ export default class Game extends cc.Component {
             projectId: "googlify-dev",
             storageBucket: "googlify-dev.appspot.com",
             messagingSenderId: "579802640871",
-            appId: "1:579802640871:web:6919d595e6f5bcd2d44d42"
+            appId: "1:579802640871:web:6919d595e6f5bcd2d44d42",
+            measurementId: "G-H0GST8Z74M"
         };
         firebase.initializeApp(firebaseConfig);
         firebase.analytics();
