@@ -82,7 +82,6 @@ export default class Game extends cc.Component {
             measurementId: "G-H0GST8Z74M"
         };
         firebase.initializeApp(firebaseConfig);
-        firebase.analytics();
     }
 
     start(): void {
