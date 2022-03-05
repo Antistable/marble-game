@@ -5721,8 +5721,13 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
+<<<<<<< HEAD
         196.888,
         318.023,
+=======
+        199.513,
+        320.599,
+>>>>>>> parent of acb78eb (微调)
         0,
         0,
         0,
