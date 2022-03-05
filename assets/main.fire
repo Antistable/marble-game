@@ -413,7 +413,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 74,
+      "width": 720,
       "height": 480
     },
     "_anchorPoint": {
@@ -469,7 +469,7 @@
       "__uuid__": "fc1183ea-d145-4560-ab93-5f67ab331255"
     },
     "_type": 0,
-    "_sizeMode": 0,
+    "_sizeMode": 1,
     "_fillType": 0,
     "_fillCenter": {
       "__type__": "cc.Vec2",
@@ -507,7 +507,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 710,
+      "width": 705,
       "height": 1050
     },
     "_anchorPoint": {
@@ -519,7 +519,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        348.761,
+        350.854,
         533.646,
         0,
         0,
@@ -5721,13 +5721,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-<<<<<<< HEAD
-        196.888,
-        318.023,
-=======
-        199.513,
-        320.599,
->>>>>>> parent of acb78eb (微调)
+        197.73,
+        319.707,
         0,
         0,
         0,
